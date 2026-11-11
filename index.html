@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attijari pro - Espace Auto-Entrepreneur</title>
+    <meta name="description" content="Application bancaire Attijari pro - Espace Auto-Entrepreneur avec gestion des comptes, historique complet des virements traités, suivi des opérations et virements." />
+    <meta property="og:title" content="Attijari pro - Espace Auto-Entrepreneur" />
+    <meta property="og:description" content="Application bancaire Attijari pro - Espace Auto-Entrepreneur avec gestion des comptes, historique complet des virements traités, suivi des opérations et virements." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#eb5545" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon2026.png" />
+    <link rel="icon" type="image/png" href="icon2026.png" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').then((reg) => {
+            reg.update();
+          }).catch(() => {});
+        });
+      }
+    </script>
+  </body>
+</html>
+

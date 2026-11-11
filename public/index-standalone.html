@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Attijari pro - Espace Auto-Entrepreneur</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon2026.png">
+  <link rel="icon" type="image/png" href="icon2026.png">
+  <meta name="theme-color" content="#eb5545">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            attijariRed: '#eb5545',
+            attijariGold: '#ca8a04',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .wavy-bg {
+      background-color: #fafafa;
+      background-image: url("data:image/svg+xml,%3Csvg width='80' height='40' viewBox='0 0 80 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 20 L20 10 L40 20 L60 30 L80 20' fill='none' stroke='%2394a3b8' stroke-width='1.2' opacity='0.35' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M0 0 L20 -10 L40 0 L60 10 L80 0' fill='none' stroke='%2394a3b8' stroke-width='1.2' opacity='0.35' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M0 40 L20 30 L40 40 L60 50 L80 40' fill='none' stroke='%2394a3b8' stroke-width='1.2' opacity='0.35' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+    }
+    .page-tab { display: none !important; }
+    .page-tab.active { display: block !important; }
+    #view-login.hidden { display: none !important; visibility: hidden !important; pointer-events: none !important; }
+    #loading-overlay.hidden { display: none !important; }
+    #app-main.hidden { display: none !important; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .animate-spin-custom { animation: spin 0.85s linear infinite; }
+  </style>
+</head>
+<body class="bg-gray-100 text-slate-800 antialiased select-none pb-24">
+
+  <!-- ================= 1. PAGE DE CONNEXION ================= -->
+  <div id="view-login" class="page-tab active fixed inset-0 z-50 wavy-bg flex flex-col justify-between items-center overflow-y-auto">
+    <div class="w-full max-w-[390px] px-4 pt-8 pb-4 flex flex-col items-center my-auto">
+      
+      <!-- Logo officiel Attijariwafa bank -->
+      <div class="flex items-center justify-center mb-6">
+        <img src="icon2026.png" onerror="this.onerror=null; this.src='/assets/aistudio/Screenshot_20261111_191003_Attijari_Mobile_9a256bc6.jpg'" alt="Attijariwafa bank" class="h-16 sm:h-18 w-auto max-w-[230px] object-contain rounded-lg shadow-xs">
+      </div>
+
+      <!-- Carte blanche de connexion -->
+      <div class="w-full bg-white rounded-[32px] shadow-[0_10px_35px_rgba(0,0,0,0.06)] border border-gray-100/80 p-7 sm:p-8 flex flex-col items-center relative">
+        <div class="w-20 h-20 rounded-full bg-[#00a2e8] text-white flex items-center justify-center font-black text-2xl shadow-sm mb-3">AS</div>
+        <h2 class="text-2xl font-black text-[#1e293b] mb-6 tracking-tight">Bienvenue Saber</h2>
+
+        <!-- Champ Mot de passe -->
+        <div class="w-full relative mb-2">
+          <input id="login-pwd" type="password" placeholder="Mot de passe" onkeydown="if(event.key==='Enter') doLogin(false)" class="w-full bg-white border border-gray-200/90 rounded-2xl py-4 px-4 text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#eb5545] pr-12 shadow-2xs">
+          <button type="button" onclick="togglePasswordVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-[#eb5545] p-1">
+            <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+
+        <!-- Erreur Mot de passe -->
+        <div id="login-error" class="hidden w-full text-left mb-3 px-1">
+          <p id="login-error-text" class="text-xs font-bold text-red-500"></p>
+        </div>
+
+        <!-- Bouton Connexion -->
+        <button type="button" onclick="doLogin(false)" class="w-full bg-[#eb5545] text-white font-black py-4 rounded-2xl text-[16px] shadow-md hover:bg-red-600 active:scale-[0.99] transition mb-6 cursor-pointer">
+          Connexion
+        </button>
+
+        <div class="w-full flex items-center mb-6">
+          <div class="flex-1 border-t border-gray-200"></div>
+          <span class="px-4 text-sm font-black text-gray-400">Ou</span>
+          <div class="flex-1 border-t border-gray-200"></div>
+        </div>
+
+        <!-- Bouton Empreinte biométrique Touch ID -->
+        <button type="button" onclick="doLogin(true)" title="Connexion par empreinte biométrique" class="w-14 h-14 rounded-full bg-[#eb5545] text-white flex items-center justify-center shadow-lg shadow-red-500/25 hover:bg-red-600 transition active:scale-95 mb-6 cursor-pointer">
+          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/>
+          </svg>
+        </button>
+
+        <button type="button" onclick="alert('Pour réinitialiser votre mot de passe, contactez le centre d’assistance au 0522 58 88 58')" class="text-[#eb5545] text-[15px] font-black hover:underline cursor-pointer">
+          Identifiant ou mot de passe oublié
+        </button>
+      </div>
+
+      <!-- Boutons Devenir client & Installer l'APK -->
+      <div class="my-5 flex flex-col items-center space-y-2.5">
+        <button type="button" onclick="alert('Ouverture de compte en ligne prochainement disponible')" class="bg-white border-2 border-[#eb5545] text-[#eb5545] font-black py-3 px-10 rounded-full text-[15px] shadow-sm hover:bg-red-50 transition cursor-pointer">
+          Devenir client
+        </button>
+        <button type="button" onclick="openInstallModal()" class="flex items-center space-x-1.5 text-xs font-bold text-gray-500 hover:text-[#eb5545] py-1 transition cursor-pointer">
+          <svg class="w-4 h-4 text-[#eb5545]" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Télécharger l'APK / Installer</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Pop-up de Chargement 5 secondes (Exactement comme la capture) -->
+    <div id="loading-overlay" class="hidden fixed inset-0 z-[100] bg-black/10 backdrop-blur-[1px] flex items-center justify-center p-4">
+      <div class="bg-white/90 backdrop-blur-md rounded-3xl py-7 px-10 shadow-2xl flex flex-col items-center justify-center border border-white/80 min-w-[210px]">
+        <div class="w-12 h-12 rounded-full border-[3.5px] border-red-100 border-t-[#eb5545] animate-spin-custom mb-3.5"></div>
+        <p class="text-[15px] font-bold text-gray-500 tracking-wide">Chargement ...</p>
+      </div>
+    </div>
+
+    <!-- 3 onglets bas de page connexion -->
+    <div class="w-full bg-white border-t border-gray-100 py-2.5 px-6 flex justify-around items-center rounded-t-[28px] shadow-sm mt-auto max-w-md mx-auto">
+      <button class="flex flex-col items-center text-[#eb5545]">
+        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 2.6L2.5 11h2.8v10h4.8v-5.2a1.9 1.9 0 0 1 3.8 0V21h4.8V11h2.8L12 2.6z"/></svg>
+        <span class="text-[11px] font-black mt-1">Accueil</span>
+      </button>
+      <button onclick="alert('Réseau Attijariwafa bank: 1000 agences et distributeurs automatiques')" class="flex flex-col items-center text-[#64748b]">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span class="text-[11px] font-semibold mt-1">Agences</span>
+      </button>
+      <button onclick="alert('Menu disponible après connexion ou contactez le 0522 58 88 58')" class="flex flex-col items-center text-[#64748b]">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="6.5" height="6.5" rx="2"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="2"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="2"/><rect x="14" y="14" width="6.5" height="6.5" rx="2"/></svg>
+        <span class="text-[11px] font-semibold mt-1">Menu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= 2. APPLICATION PRINCIPALE APRÈS CONNEXION ================= -->
+  <div id="app-main" class="hidden max-w-md mx-auto bg-gray-50 min-h-screen relative">
+    
+    <!-- ONGLET 1: ACCUEIL -->
+    <div id="tab-accueil" class="page-tab active p-4">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h2 class="text-2xl font-black text-gray-900 tracking-tight">Bienvenue SABER</h2>
+          <p class="text-xs text-gray-400 font-medium mt-0.5">Dernière connexion: 10/11/2026 (00h09)</p>
+        </div>
+        <button onclick="doLogout()" title="Se déconnecter" class="w-10 h-10 rounded-full bg-[#eb5545] text-white flex items-center justify-center shadow-md">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+        </button>
+      </div>
+
+      <!-- Carte Compte Principal Chèque avec solde 3 252,54 MAD -->
+      <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-4">
+        <div class="bg-gradient-to-r from-[#eb5545] to-[#d63333] p-5 text-white">
+          <div class="flex justify-between items-start">
+            <h3 class="text-xl font-bold">Compte chèque</h3>
+            <span class="text-white font-bold text-lg">⋮</span>
+          </div>
+          <p class="text-xs text-white/80 mt-2">Compte chèque</p>
+          <p class="text-sm font-mono font-medium tracking-wider mt-0.5">00713N300400592</p>
+        </div>
+        <div class="p-5 bg-white flex justify-end items-center">
+          <span class="text-3xl font-black text-gray-900 tracking-tight flex items-baseline">
+            3 252,<span class="text-sm text-gray-600 font-bold ml-0.5 -translate-y-2 inline-block">54 MAD</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Accès rapides -->
+      <div class="grid grid-cols-2 gap-3 mb-5">
+        <button onclick="switchTab('compte-pro')" class="bg-gradient-to-r from-blue-700 to-blue-900 text-white font-bold p-3.5 rounded-2xl text-xs text-center shadow-sm">
+          Compte Pro (158 747,57 MAD)
+        </button>
+        <button onclick="switchTab('virements-historique')" class="bg-[#eb5545] text-white font-bold p-3.5 rounded-2xl text-xs text-center shadow-sm">
+          Voir 18 virements traités
+        </button>
+      </div>
+
+      <!-- Dernières opérations -->
+      <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-4">
+        <div class="flex justify-between items-center mb-4">
+          <h4 class="font-extrabold text-gray-900 text-base">Dernières Opérations</h4>
+          <span class="text-xs font-bold text-[#eb5545]">Voir plus</span>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between py-2 border-b border-gray-50">
+            <div class="flex items-center space-x-3">
+              <div class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black">↙</div>
+              <div>
+                <p class="font-bold text-sm text-gray-800">Virement effectué ...</p>
+                <p class="text-xs text-gray-400">17 oct. 2026</p>
+              </div>
+            </div>
+            <span class="font-black text-sm text-emerald-600">+ 3 833,62 MAD</span>
+          </div>
+          <div class="flex items-center justify-between py-2 border-b border-gray-50">
+            <div class="flex items-center space-x-3">
+              <div class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black">↙</div>
+              <div>
+                <p class="font-bold text-sm text-gray-800">SMMCPAN</p>
+                <p class="text-xs text-gray-400">14 oct. 2026</p>
+              </div>
+            </div>
+            <span class="font-black text-sm text-emerald-600">+ 3 888,29 MAD</span>
+          </div>
+          <div class="flex items-center justify-between py-2">
+            <div class="flex items-center space-x-3">
+              <div class="w-9 h-9 rounded-full bg-red-100 text-red-600 flex items-center justify-center font-black">↗</div>
+              <div>
+                <p class="font-bold text-sm text-gray-800">ASSURANCE ATTI...</p>
+                <p class="text-xs text-gray-400">16 oct. 2026</p>
+              </div>
+            </div>
+            <span class="font-black text-sm text-red-600">- 233,50 MAD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ONGLET 2: VIREMENT ETAPE 1/4 -->
+    <div id="tab-virement-etape1" class="page-tab p-4 bg-white min-h-screen">
+      <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-5">
+        <button onclick="switchTab('accueil')" class="text-[#eb5545] p-1">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <h2 class="text-xl font-bold text-gray-900">Virement</h2>
+        <!-- Horloge ouvrant l'historique des 18 virements -->
+        <button onclick="switchTab('virements-historique')" class="text-[#eb5545] p-1">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/><path d="M3.05 11a9 9 0 0 1 .5-2"/></svg>
+        </button>
+      </div>
+
+      <!-- Indicateur 1/4 -->
+      <div class="flex items-center space-x-4 mb-5">
+        <div class="w-14 h-14 rounded-full border-4 border-gray-200 border-t-[#eb5545] flex items-center justify-center font-black text-sm">1/4</div>
+        <div>
+          <h3 class="font-extrabold text-gray-900 text-base">Émetteur et bénéficiaire</h3>
+          <p class="text-xs text-gray-400">Etape Suivante: Saisie du montant</p>
+        </div>
+      </div>
+
+      <div class="bg-gray-100 p-1.5 rounded-full flex mb-5">
+        <button class="flex-1 py-2 rounded-full font-bold text-sm bg-[#eb5545] text-white">Nouveau</button>
+        <button onclick="switchTab('beneficiaires')" class="flex-1 py-2 rounded-full font-bold text-sm text-[#eb5545]">Favoris</button>
+      </div>
+
+      <!-- Carte Compte Chèque Émetteur avec solde 3 252,54 MAD -->
+      <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3.5">
+          <div class="w-12 h-12 rounded-full bg-[#eb5545] text-white flex items-center justify-center shadow-sm">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="2"/><line x1="7" y1="10" x2="13" y2="10"/><line x1="7" y1="14" x2="11" y2="14"/></svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-gray-900 text-[15px]">Compte chèque</h4>
+            <p class="text-xs text-gray-400 font-mono">000713N300400592</p>
+            <p class="text-sm font-extrabold text-[#10b981] mt-0.5">3 252,54 MAD</p>
+          </div>
+        </div>
+        <span class="text-[#eb5545] font-bold">∨</span>
+      </div>
+
+      <!-- Choix Bénéficiaire -->
+      <div class="mb-8">
+        <p class="text-xs font-bold text-gray-400 mb-2">Bénéficiaire</p>
+        <div onclick="switchTab('beneficiaires')" class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm flex items-center justify-between cursor-pointer">
+          <span id="selected-beneficiaire-text" class="font-bold text-gray-900 text-[15px]">Choisissez ou ajoutez un bénéficiaire</span>
+          <span class="text-[#eb5545] font-bold">›</span>
+        </div>
+      </div>
+
+      <button onclick="startVirementFlow()" class="w-full bg-[#eb5545] text-white font-extrabold py-4 rounded-full text-[15px] shadow-md hover:bg-red-600 transition">
+        Continuer vers la confirmation
+      </button>
+    </div>
+
+    <!-- ONGLET 3: PAGE OTP (SMS DE CONFIRMATION - Identique à la capture) -->
+    <div id="tab-otp" class="page-tab p-4 bg-white min-h-screen">
+      <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
+        <button onclick="switchTab(otpReturnTab || 'virement-etape1')" class="text-[#eb5545] p-1">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <h2 class="text-xl font-black text-gray-900">OTP</h2>
+        <div class="w-6"></div>
+      </div>
+
+      <div class="flex flex-col items-center pt-6 px-4">
+        <!-- Illustration Téléphone + Bulle SMS exacte -->
+        <div class="w-24 h-24 flex items-center justify-center mb-6 relative">
+          <svg class="w-20 h-20" viewBox="0 0 80 80" fill="none">
+            <rect x="22" y="16" width="34" height="52" rx="6" stroke="#eb5545" stroke-width="3" fill="none"/>
+            <line x1="33" y1="22" x2="45" y2="22" stroke="#eb5545" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="30" y1="62" x2="48" y2="62" stroke="#eb5545" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M44 14 C44 9 48 5 53 5 H65 C70 5 74 9 74 14 V25 C74 30 70 34 65 34 H55 L47 41 V34 H53 C48 34 44 30 44 25 Z" stroke="#f59e0b" stroke-width="3" fill="white" stroke-linejoin="round" stroke-linecap="round"/>
+            <circle cx="53" cy="19" r="2.2" fill="#eb5545"/>
+            <circle cx="59" cy="19" r="2.2" fill="#eb5545"/>
+            <circle cx="65" cy="19" r="2.2" fill="#eb5545"/>
+          </svg>
+        </div>
+
+        <h3 class="text-2xl font-black text-[#1e293b] mb-3 text-center">Code de confirmation</h3>
+        <p class="text-[15px] text-gray-500 font-medium text-center max-w-[280px] leading-relaxed mb-8">
+          Un code de vérification a été envoyé au numéro *******2546.
+        </p>
+
+        <!-- Champ Code encadré de rouge -->
+        <div class="w-full max-w-sm mb-2">
+          <div id="otp-input-box" class="border-2 border-[#eb5545] rounded-2xl px-4 pt-2.5 pb-2.5 bg-white relative transition">
+            <label class="block text-xs font-bold text-[#eb5545] leading-none mb-1">Code</label>
+            <input id="otp-code-input" type="text" inputmode="numeric" placeholder="" onkeydown="if(event.key==='Enter') validateOtp()" oninput="document.getElementById('otp-err-msg').classList.add('hidden')" class="w-full text-base font-bold text-gray-900 outline-none bg-transparent">
+          </div>
+          <p id="otp-err-msg" class="hidden text-xs font-bold text-red-500 mt-2 px-1 text-center">Code erroné, veuillez réessayer.</p>
+        </div>
+
+        <!-- Bouton Valider -->
+        <div class="w-full max-w-sm mt-8">
+          <button type="button" onclick="validateOtp()" class="w-full bg-[#eb5545] text-white font-black py-4 rounded-2xl text-[16px] shadow-md hover:bg-red-600 transition cursor-pointer">
+            Valider
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ONGLET 4: HISTORIQUE DES 18 VIREMENTS TRAITÉS -->
+    <div id="tab-virements-historique" class="page-tab p-4 bg-white min-h-screen">
+      <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
+        <button onclick="switchTab('virement-etape1')" class="text-[#eb5545] p-1">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <h2 class="text-xl font-bold text-gray-900">Mes virements</h2>
+        <span class="text-xs font-black bg-red-100 text-[#eb5545] px-2.5 py-1 rounded-full">18 traités</span>
+      </div>
+      <div class="divide-y divide-gray-100" id="list-virements"></div>
+    </div>
+
+    <!-- ONGLET 5: GESTION DES 8 BÉNÉFICIAIRES -->
+    <div id="tab-beneficiaires" class="page-tab p-4 bg-white min-h-screen">
+      <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
+        <button onclick="switchTab('virement-etape1')" class="text-[#eb5545] p-1">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <h2 class="text-xl font-bold text-gray-900">Gestion des bénéficiaires</h2>
+        <button onclick="openAjoutBeneficiaire()" class="text-xs font-bold bg-[#eb5545] text-white px-3 py-1.5 rounded-full shadow-xs">+ Ajouter</button>
+      </div>
+      <div class="divide-y divide-gray-100" id="list-beneficiaires"></div>
+    </div>
+
+    <!-- FORMULAIRE AJOUT BÉNÉFICIAIRE -->
+    <div id="tab-ajouter-beneficiaire" class="page-tab p-4 bg-white min-h-screen">
+      <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
+        <button onclick="switchTab('beneficiaires')" class="text-[#eb5545] p-1">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <h2 class="text-lg font-bold text-gray-900">Ajouter un bénéficiaire</h2>
+        <div class="w-6"></div>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-500 mb-1">Nom du bénéficiaire</label>
+          <input id="new-b-nom" type="text" placeholder="Ex: ABALLAGH" class="w-full border border-gray-200 rounded-2xl p-3.5 text-sm outline-none uppercase font-bold">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-500 mb-1">Prénom du bénéficiaire</label>
+          <input id="new-b-prenom" type="text" placeholder="Ex: ABDERRAHIM" class="w-full border border-gray-200 rounded-2xl p-3.5 text-sm outline-none font-bold">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-500 mb-1">RIB (24 chiffres)</label>
+          <input id="new-b-rib" type="text" placeholder="007450000713330040278206" class="w-full border border-gray-200 rounded-2xl p-3.5 text-sm outline-none font-mono font-bold">
+        </div>
+        <button onclick="submitNewBeneficiaire()" class="w-full bg-[#eb5545] text-white font-bold py-4 rounded-2xl text-base shadow hover:bg-red-600 transition mt-6">
+          Valider
+        </button>
+      </div>
+    </div>
+
+    <!-- ONGLET 6: COMPTE PROFESSIONNEL -->
+    <div id="tab-compte-pro" class="page-tab p-4 bg-gray-50 min-h-screen">
+      <div class="flex items-center justify-between pb-4 border-b border-gray-200 mb-4">
+        <button onclick="switchTab('accueil')" class="text-blue-700 font-bold">‹ Retour</button>
+        <h2 class="text-lg font-black text-gray-900">Compte Professionnel</h2>
+        <span></span>
+      </div>
+      <div class="bg-gradient-to-r from-blue-700 to-blue-900 text-white p-5 rounded-3xl shadow-md mb-4">
+        <p class="text-xs opacity-80">Solde disponible DGI</p>
+        <h3 class="text-2xl font-black mt-1">158 747,57 MAD</h3>
+        <p class="text-[11px] font-mono opacity-80 mt-2">RIB: 007 450 000713300400592 00</p>
+      </div>
+    </div>
+
+    <!-- ONGLET 7: MENU COMPLET -->
+    <div id="tab-menu" class="page-tab p-4 bg-white min-h-screen">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 rounded-full bg-[#00a2e8] text-white flex items-center justify-center font-black text-lg">AS</div>
+          <div>
+            <h3 class="font-black text-gray-900 text-lg">SABER →</h3>
+            <p class="text-xs text-gray-400">Dernière connexion: 10/11/2026 (00h09)</p>
+          </div>
+        </div>
+        <button onclick="doLogout()" class="w-10 h-10 rounded-full bg-[#eb5545] text-white flex items-center justify-center shadow">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+        </button>
+      </div>
+
+      <div class="mb-4">
+        <input type="text" placeholder="Recherche ..." class="w-full bg-white border border-gray-200 rounded-full py-3 px-5 text-sm outline-none">
+      </div>
+
+      <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm flex items-center justify-between mb-5">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-full bg-[#eb5545] text-white flex items-center justify-center">🚀</div>
+          <span class="font-extrabold text-sm">Découvrez nos produits et services</span>
+        </div>
+        <span class="text-[#eb5545] font-bold">›</span>
+      </div>
+
+      <h4 class="font-extrabold text-gray-900 text-sm mb-3">Fréquemment utilisées</h4>
+      <div class="grid grid-cols-4 gap-2 mb-6 text-center">
+        <div class="bg-white border border-gray-100 rounded-2xl p-2 aspect-square flex flex-col justify-between items-center shadow-xs">
+          <span class="text-lg mt-1">📱</span>
+          <span class="text-[10px] font-bold text-[#eb5545]">Recharge mobile...</span>
+        </div>
+        <div onclick="alert('RIB: 00745000071330040059200')" class="bg-white border border-gray-100 rounded-2xl p-2 aspect-square flex flex-col justify-between items-center shadow-xs cursor-pointer">
+          <span class="text-lg mt-1">🏁</span>
+          <span class="text-[10px] font-bold text-[#eb5545]">Mon RIB</span>
+        </div>
+        <div onclick="switchTab('virement-etape1')" class="bg-white border border-gray-100 rounded-2xl p-2 aspect-square flex flex-col justify-between items-center shadow-xs cursor-pointer">
+          <span class="text-lg mt-1">⇆</span>
+          <span class="text-[10px] font-bold text-[#eb5545]">Virement</span>
+        </div>
+        <div class="bg-white border border-gray-100 rounded-2xl p-2 aspect-square flex flex-col justify-between items-center shadow-xs">
+          <span class="text-lg mt-1">💳</span>
+          <span class="text-[10px] font-bold text-[#eb5545]">Mes cartes</span>
+        </div>
+      </div>
+      <p class="text-center font-bold text-gray-400 text-xs mt-8">Version 6.13.2</p>
+    </div>
+
+    <!-- BARRE DE NAVIGATION INFÉRIEURE AVEC BOUTON FLOTTANT DU MILIEU -->
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-100 px-6 py-2 flex justify-between items-center rounded-t-3xl shadow-lg z-40">
+      <button onclick="switchTab('accueil')" id="nav-btn-accueil" class="flex flex-col items-center text-[#eb5545]">
+        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 2.6L2.5 11h2.8v10h4.8v-5.2a1.9 1.9 0 0 1 3.8 0V21h4.8V11h2.8L12 2.6z"/></svg>
+        <span class="text-[11px] font-bold mt-1">Accueil</span>
+      </button>
+      <button onclick="switchTab('compte-pro')" id="nav-btn-comptes" class="flex flex-col items-center text-[#64748b]">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        <span class="text-[11px] font-semibold mt-1">Comptes</span>
+      </button>
+      <!-- Bouton flottant officiel du milieu -->
+      <div class="relative -top-5">
+        <button onclick="switchTab('virement-etape1')" class="w-14 h-14 rounded-full bg-[#171e28] text-white flex items-center justify-center shadow-xl border-4 border-white cursor-pointer active:scale-95 transition">
+          <svg class="w-7 h-7 text-white" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 9H8M12 5L8 9L12 13M7 18H20M16 14L20 18L16 22"/></svg>
+        </button>
+      </div>
+      <button onclick="switchTab('beneficiaires')" id="nav-btn-cartes" class="flex flex-col items-center text-[#64748b]">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 0 1 8 0v2"/></svg>
+        <span class="text-[11px] font-semibold mt-1">Bénéficiaires</span>
+      </button>
+      <button onclick="switchTab('menu')" id="nav-btn-menu" class="flex flex-col items-center text-[#64748b]">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="6.5" height="6.5" rx="2"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="2"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="2"/><rect x="14" y="14" width="6.5" height="6.5" rx="2"/></svg>
+        <span class="text-[11px] font-semibold mt-1">Menu</span>
+      </button>
+    </nav>
+  </div>
+
+  <script>
+    // Variables d'état
+    let otpReturnTab = 'virement-etape1';
+
+    // Service Worker PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+    function togglePasswordVisibility() {
+      const pwd = document.getElementById('login-pwd');
+      pwd.type = pwd.type === 'password' ? 'text' : 'password';
+    }
+
+    // Gestion de la connexion garantie avec Simo123@ ou Empreinte + 5 secondes de chargement (ou tap pour entrer)
+    function doLogin(isBiometric) {
+      const pwdInput = document.getElementById('login-pwd');
+      const errBox = document.getElementById('login-error');
+
+      // Si le champ est vide ou si l'utilisateur n'a rien saisi, on met automatiquement Simo123@
+      if (pwdInput && !pwdInput.value) {
+        pwdInput.value = 'Simo123@';
+      }
+      if (errBox) errBox.classList.add('hidden');
+
+      // Afficher le pop-up de chargement officiel Attijari
+      const overlay = document.getElementById('loading-overlay');
+      if (overlay) {
+        overlay.style.setProperty('display', 'flex', 'important');
+        overlay.classList.remove('hidden');
+      }
+
+      // Fonction d'entrée immédiate et définitive dans l'application
+      function enterApplication() {
+        if (overlay) {
+          overlay.style.setProperty('display', 'none', 'important');
+          overlay.classList.add('hidden');
+        }
+        const viewLogin = document.getElementById('view-login');
+        if (viewLogin) {
+          viewLogin.style.setProperty('display', 'none', 'important');
+          viewLogin.classList.remove('active', 'flex');
+          viewLogin.classList.add('hidden');
+        }
+        const appMain = document.getElementById('app-main');
+        if (appMain) {
+          appMain.style.setProperty('display', 'block', 'important');
+          appMain.classList.remove('hidden');
+        }
+        switchTab('accueil');
+      }
+
+      // Rendre l'overlay cliquable pour entrer tout de suite si l'utilisateur est pressé
+      if (overlay) {
+        overlay.onclick = enterApplication;
+      }
+
+      // Entrée automatique après 5 secondes exactement comme demandé
+      setTimeout(enterApplication, 5000);
+    }
+
+    function doLogout() {
+      const appMain = document.getElementById('app-main');
+      if (appMain) {
+        appMain.style.setProperty('display', 'none', 'important');
+        appMain.classList.add('hidden');
+      }
+
+      const viewLogin = document.getElementById('view-login');
+      if (viewLogin) {
+        viewLogin.style.setProperty('display', 'flex', 'important');
+        viewLogin.classList.remove('hidden');
+        viewLogin.classList.add('active', 'flex');
+      }
+
+      const pwdInput = document.getElementById('login-pwd');
+      if (pwdInput) pwdInput.value = '';
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('#app-main .page-tab').forEach(el => {
+        el.classList.remove('active');
+        el.style.setProperty('display', 'none', 'important');
+      });
+      const target = document.getElementById('tab-' + tabId);
+      if (target) {
+        target.classList.add('active');
+        target.style.setProperty('display', 'block', 'important');
+      }
+      window.scrollTo(0, 0);
+
+      const navAccueil = document.getElementById('nav-btn-accueil');
+      const navMenu = document.getElementById('nav-btn-menu');
+      if (navAccueil && navMenu) {
+        navAccueil.className = tabId === 'accueil' ? 'flex flex-col items-center text-[#eb5545]' : 'flex flex-col items-center text-[#64748b]';
+        navMenu.className = tabId === 'menu' ? 'flex flex-col items-center text-[#eb5545]' : 'flex flex-col items-center text-[#64748b]';
+      }
+    }
+
+    // Lancement du virement vers OTP
+    function startVirementFlow() {
+      otpReturnTab = 'virement-etape1';
+      document.getElementById('otp-code-input').value = '';
+      document.getElementById('otp-err-msg').classList.add('hidden');
+      switchTab('otp');
+    }
+
+    function openAjoutBeneficiaire() {
+      document.getElementById('new-b-nom').value = '';
+      document.getElementById('new-b-prenom').value = '';
+      document.getElementById('new-b-rib').value = '';
+      switchTab('ajouter-beneficiaire');
+    }
+
+    function submitNewBeneficiaire() {
+      const nom = document.getElementById('new-b-nom').value;
+      const rib = document.getElementById('new-b-rib').value;
+      if (!nom || !rib) {
+        alert('Veuillez renseigner le nom et le RIB');
+        return;
+      }
+      otpReturnTab = 'ajouter-beneficiaire';
+      document.getElementById('otp-code-input').value = '';
+      document.getElementById('otp-err-msg').classList.add('hidden');
+      switchTab('otp');
+    }
+
+    // Validation OTP : si n'importe quel code est saisi, affiche code erroné (sauf 2546 pour succès)
+    function validateOtp() {
+      const code = document.getElementById('otp-code-input').value.trim();
+      const err = document.getElementById('otp-err-msg');
+      if (!code) {
+        err.textContent = 'Veuillez saisir le code reçu par SMS.';
+        err.classList.remove('hidden');
+        return;
+      }
+      if (code === '2546') {
+        err.classList.add('hidden');
+        alert('Opération confirmée avec succès !');
+        switchTab('accueil');
+      } else {
+        err.textContent = 'Code erroné, veuillez réessayer.';
+        err.classList.remove('hidden');
+      }
+    }
+
+    function openInstallModal() {
+      alert("Pour installer l'application sur Android, appuyez sur les 3 points verticaux de votre navigateur puis 'Installer l'application' ou 'Ajouter à l'écran d'accueil'.");
+    }
+
+    // 8 Bénéficiaires
+    const beneficiaires = [
+      { nom: 'YOUSSEF  AIT OUFKIR SAID', rib: '007450000713200030618807', date: '03 oct. 2024', initials: 'Y', bg: 'bg-[#0284c7]', attijari: true },
+      { nom: 'WAHBI AMMAR', rib: '007240000987500030146154', date: '16 nov. 2025', initials: 'WA', bg: 'bg-[#6b21a8]', attijari: true },
+      { nom: 'Mohamed Allam', rib: '230450606031621101750032', date: '05 août 2025', initials: 'MA', bg: 'bg-[#0096e6]', attijari: false },
+      { nom: 'NAOUFAL BENTALEB', rib: '007450000713500030329441', date: '25 oct. 2024', initials: 'NB', bg: 'bg-[#0f766e]', attijari: true },
+      { nom: 'Mouhssine Belaicha', rib: '230450466740221101750002', date: '27 juin 2026', initials: 'MB', bg: 'bg-[#06b6d4]', attijari: false },
+      { nom: 'ABDERRAHIM M ABALLAGH', rib: '007450000713330040278206', date: '08 févr. 2026', initials: 'AM', bg: 'bg-[#0284c7]', attijari: true },
+      { nom: 'OUFKIR SAID YOUSSEF M AIT', rib: '007450000713530040234934', date: '19 mai 2025', initials: 'OS', bg: 'bg-[#e11d48]', attijari: true },
+      { nom: 'Mohamed Malih', rib: '007010000501900030087114', date: '05 avr. 2026', initials: 'M..', bg: 'bg-[#6d28d9]', attijari: true }
+    ];
+
+    const listBenEl = document.getElementById('list-beneficiaires');
+    if (listBenEl) {
+      listBenEl.innerHTML = beneficiaires.map(b => `
+        <div class="py-3.5 flex items-start justify-between">
+          <div class="flex items-start space-x-3.5">
+            <div class="relative shrink-0">
+              <div class="w-12 h-12 rounded-full ${b.bg} text-white flex items-center justify-center font-bold text-base shadow-sm">${b.initials}</div>
+              ${b.attijari ? `
+                <div class="absolute -bottom-0.5 -right-0.5 w-4.5 h-4.5 rounded-full bg-[#f08b00] border-2 border-white flex items-center justify-center">
+                  <span class="text-[9px] font-black text-[#7a1000]">〰</span>
+                </div>
+              ` : `
+                <div class="absolute -bottom-0.5 -right-0.5 w-4.5 h-4.5 rounded-full bg-white border border-gray-200 flex items-center justify-center">
+                  <span class="text-[8px] font-black text-blue-500">▶</span>
+                </div>
+              `}
+            </div>
+            <div>
+              <h4 class="font-extrabold text-gray-900 text-[15px] leading-snug">${b.nom}</h4>
+              <p class="text-xs text-gray-500 font-medium mt-0.5">RIB: <span class="font-mono text-gray-700">${b.rib}</span></p>
+              <p class="text-xs text-gray-400 font-medium mt-0.5">Date d'ajout: ${b.date}</p>
+            </div>
+          </div>
+          <span class="text-[#eb5545] font-bold text-xl px-2">⋮</span>
+        </div>
+      `).join('');
+    }
+
+    // 18 Virements Traités
+    const virementsTraites = [
+      { nom: 'EDDALLAL mohamed', montant: '100,00 DH', date: '04/09/2026' },
+      { nom: 'ABDERRAHIM M ABALLAGH', montant: '150,00 DH', date: '04/08/2026' },
+      { nom: 'ABDERRAHIM M ABALL...', montant: '3 000,00 DH', date: '06/07/2026' },
+      { nom: 'OUFKIR SAID YOUSSEF...', montant: '3 000,00 DH', date: '06/07/2026' },
+      { nom: 'ABDERRAHIM M ABALL...', montant: '3 000,00 DH', date: '06/07/2026' },
+      { nom: 'OUFKIR SAID YOUSSEF...', montant: '10 000,00 DH', date: '02/07/2026' },
+      { nom: 'ABDERRAHIM M ABALL...', montant: '2 000,00 DH', date: '29/06/2026' },
+      { nom: 'OUFKIR SAID YOUSSEF...', montant: '1 000,00 DH', date: '29/06/2026' },
+      { nom: 'ABDERRAHIM M ABALL...', montant: '1 000,00 DH', date: '25/06/2026' },
+      { nom: 'EDDALLAL mohamed', montant: '500,00 DH', date: '24/06/2026' },
+      { nom: 'ABDERRAHIM M ABALL...', montant: '2 000,00 DH', date: '20/06/2026' },
+      { nom: 'ABDERRAHIM M ABALL...', montant: '1 500,00 DH', date: '18/06/2026' },
+      { nom: 'ABDERRAHIM M ABALL...', montant: '3 000,00 DH', date: '12/06/2026' },
+      { nom: 'OUFKIR SAID YOUSSEF...', montant: '5 000,00 DH', date: '10/06/2026' },
+      { nom: 'OUFKIR SAID YOUSSEF...', montant: '2 000,00 DH', date: '08/06/2026' },
+      { nom: 'OUFKIR SAID YOUSSEF...', montant: '4 000,00 DH', date: '04/06/2026' },
+      { nom: 'OUFKIR SAID YOUSSEF...', montant: '1 000,00 DH', date: '02/06/2026' },
+      { nom: 'OUFKIR SAID YOUSSEF...', montant: '2 500,00 DH', date: '30/05/2026' }
+    ];
+
+    const listVirEl = document.getElementById('list-virements');
+    if (listVirEl) {
+      listVirEl.innerHTML = virementsTraites.map(v => `
+        <div class="py-3.5 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full bg-[#84c5d6] text-white flex items-center justify-center font-bold text-sm">⇆</div>
+            <div>
+              <h4 class="font-extrabold text-gray-900 text-sm">${v.nom}</h4>
+              <p class="text-xs text-gray-400 mt-0.5">${v.date}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="font-black text-gray-900 text-sm">${v.montant}</p>
+            <p class="text-xs text-emerald-600 font-bold mt-0.5">Exécuté</p>
+          </div>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>

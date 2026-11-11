@@ -1,0 +1,6 @@
+{
+  "name": "Attijari pro - Espace Auto-Entrepreneur",
+  "description": "Application bancaire Attijari pro - Espace Auto-Entrepreneur avec gestion des comptes, historique complet des virements traités, suivi des opérations et virements.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
